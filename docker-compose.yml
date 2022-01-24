@@ -1,0 +1,38 @@
+version: "3.4"
+
+networks:
+  nw-dev:
+    external: true
+
+volumes:
+  nw-bundle:
+  nw-db:
+    external: true
+
+services:
+  app:
+    image: "neue-wohnung:1.0.1"
+    depends_on:
+      - database
+    networks:
+      - default
+      - nw-dev
+    volumes:
+      - .:/usr/local/app
+      - nw-bundle:/usr/local/bundle #do not link bundle and persist it between dc up runs
+    stdin_open: true
+    tty: true
+    env_file:
+      - ./.env
+
+  database:
+    image: "postgres:alpine3.15"
+    volumes:
+      - nw-db:/data/db
+    networks:
+      - default
+      - nw-dev
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5432:5432
