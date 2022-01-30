@@ -16,4 +16,12 @@ namespace :telegram do
     first_apartment = Apartment.find(1)
     NotifyAboutApartment.new.call(first_receiver, first_apartment)
   end
+
+  task notify_last_apartment_all_receivers: :environment do 
+    last_apartment = Apartment.last 
+    notify_about_apartment = NotifyAboutApartment.new
+    Receiver.all.each do |receiver|
+      notify_about_apartment.call(receiver, last_apartment)
+    end
+  end
 end
